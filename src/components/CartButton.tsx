@@ -67,26 +67,28 @@ const CartButton: React.FC<CartButtonProps> = ({ itemCount }) => {
 
   return (
     <>
-      {/* Floating Cart Button */}
+      {/* Floating Cart Button with enhanced visibility */}
       <button
         onClick={toggleCart}
         className={cn(
-          "fixed bottom-6 right-6 z-40 bg-burguer-red text-white rounded-full p-3 shadow-lg",
+          "fixed bottom-6 right-6 z-40 bg-burguer-red text-white rounded-full p-4 shadow-lg",
           "hover:bg-burguer-darkRed transition-all duration-300 btn-pulse",
+          "border-4 border-white",
           itemCount > 0 ? "animate-float" : ""
         )}
+        aria-label="Abrir carrinho de compras"
       >
         <div className="relative">
-          <ShoppingCart size={24} />
+          <ShoppingCart size={28} />
           {itemCount > 0 && (
-            <span className="absolute -top-2 -right-2 bg-burguer-gold text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
+            <span className="absolute -top-3 -right-3 bg-burguer-gold text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">
               {itemCount}
             </span>
           )}
         </div>
       </button>
 
-      {/* Cart Panel */}
+      {/* Cart Panel with improved styling */}
       <div
         className={cn(
           "fixed top-0 right-0 h-full w-full md:w-96 bg-white shadow-xl z-50 transform transition-transform duration-300",
@@ -95,11 +97,14 @@ const CartButton: React.FC<CartButtonProps> = ({ itemCount }) => {
       >
         <div className="flex flex-col h-full">
           {/* Cart Header */}
-          <div className="flex items-center justify-between p-4 border-b">
-            <h2 className="font-poppins font-bold text-xl">Seu Carrinho</h2>
+          <div className="flex items-center justify-between p-4 border-b bg-burguer-red text-white">
+            <h2 className="font-poppins font-bold text-xl flex items-center">
+              <ShoppingCart size={24} className="mr-2" /> Seu Carrinho
+            </h2>
             <button
               onClick={toggleCart}
-              className="p-1 rounded-full hover:bg-gray-100"
+              className="p-1 rounded-full hover:bg-burguer-darkRed"
+              aria-label="Fechar carrinho"
             >
               <X size={24} />
             </button>
@@ -119,14 +124,16 @@ const CartButton: React.FC<CartButtonProps> = ({ itemCount }) => {
                         <div className="flex items-center mt-1">
                           <button 
                             onClick={() => updateQuantity(item.id, -1)}
-                            className="text-gray-500 hover:text-burguer-red p-1"
+                            className="text-gray-500 hover:text-burguer-red p-1 bg-gray-100 rounded-full"
+                            aria-label="Diminuir quantidade"
                           >
                             <Minus size={14} />
                           </button>
-                          <span className="mx-2 text-sm">{item.quantity}</span>
+                          <span className="mx-2 text-sm font-bold">{item.quantity}</span>
                           <button 
                             onClick={() => updateQuantity(item.id, 1)}
-                            className="text-gray-500 hover:text-burguer-red p-1"
+                            className="text-gray-500 hover:text-burguer-red p-1 bg-gray-100 rounded-full"
+                            aria-label="Aumentar quantidade"
                           >
                             <Plus size={14} />
                           </button>
@@ -142,7 +149,8 @@ const CartButton: React.FC<CartButtonProps> = ({ itemCount }) => {
                       </div>
                       <button 
                         onClick={() => removeItem(item.id)}
-                        className="mt-2 flex items-center text-xs text-red-500 hover:text-red-700"
+                        className="mt-2 flex items-center text-xs text-red-500 hover:text-red-700 bg-red-100 px-2 py-1 rounded-full"
+                        aria-label="Remover item"
                       >
                         <Trash2 size={14} className="mr-1" /> Remover
                       </button>
@@ -154,6 +162,7 @@ const CartButton: React.FC<CartButtonProps> = ({ itemCount }) => {
               <div className="flex flex-col items-center justify-center h-full">
                 <ShoppingCart size={64} className="text-gray-300 mb-4" />
                 <p className="text-gray-500">Seu carrinho está vazio</p>
+                <p className="text-gray-400 text-sm mt-2">Adicione produtos ao carrinho para continuar</p>
               </div>
             )}
           </div>
@@ -162,19 +171,22 @@ const CartButton: React.FC<CartButtonProps> = ({ itemCount }) => {
           <div className="p-4 border-t bg-gray-50">
             <div className="flex justify-between mb-4">
               <span className="font-medium">Subtotal:</span>
-              <span className="font-bold">
+              <span className="font-bold text-lg">
                 {cartItems.length > 0 ? `R$ ${calculateTotal().toFixed(2)}` : "R$ 0,00"}
               </span>
             </div>
             <Button 
               disabled={cartItems.length === 0}
               className={cn(
-                "w-full font-poppins font-semibold", 
+                "w-full font-poppins font-semibold py-6", 
                 cartItems.length > 0 ? "bg-green-600 hover:bg-green-700 animate-pulse" : "bg-gray-300"
               )}
             >
               Finalizar Pedido
             </Button>
+            <p className="text-center text-xs text-gray-500 mt-2">
+              Clique para finalizar seu pedido
+            </p>
           </div>
         </div>
       </div>

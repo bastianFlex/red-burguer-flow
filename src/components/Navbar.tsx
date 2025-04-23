@@ -1,36 +1,13 @@
 
 import React, { useState, useEffect } from "react";
-import { Menu, X, ShoppingCart, Search } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Link, useLocation } from "react-router-dom";
-import { useToast } from "@/components/ui/use-toast";
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [cartItemCount, setCartItemCount] = useState(0);
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const { toast } = useToast();
   const location = useLocation();
-
-  // Animation demo for cart
-  const addToCart = () => {
-    setCartItemCount(prev => prev + 1);
-    const cartIcon = document.getElementById("cart-icon");
-    if (cartIcon) {
-      cartIcon.classList.add("animate-shake");
-      setTimeout(() => {
-        cartIcon.classList.remove("animate-shake");
-      }, 500);
-    }
-    
-    toast({
-      title: "Item adicionado ao carrinho",
-      description: "Produto adicionado com sucesso!",
-      variant: "default",
-      className: "bg-burguer-darkRed text-white"
-    });
-  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -96,30 +73,6 @@ const Navbar: React.FC = () => {
             <NavLink href="/sobre" active={location.pathname === "/sobre"}>Sobre Nós</NavLink>
             <NavLink href="/contato" active={location.pathname === "/contato"}>Contato</NavLink>
             <NavLink href="/mais-vendidos" active={location.pathname === "/mais-vendidos"}>Mais Vendidos</NavLink>
-          </div>
-        </div>
-
-        <div className="flex items-center space-x-3">
-          <div className="relative">
-            <button 
-              className="p-2 rounded-full hover:bg-burguer-light transition-colors duration-300 ripple-effect"
-              onClick={() => window.location.href = "/cardapio"}
-            >
-              <Search size={22} />
-            </button>
-          </div>
-          <div className="relative">
-            <button 
-              className="p-2 rounded-full hover:bg-burguer-light transition-colors duration-300 ripple-effect"
-              onClick={addToCart}
-            >
-              <ShoppingCart id="cart-icon" size={22} />
-              {cartItemCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-burguer-red text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold animate-scale-in">
-                  {cartItemCount}
-                </span>
-              )}
-            </button>
           </div>
         </div>
       </div>

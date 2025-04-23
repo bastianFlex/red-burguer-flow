@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogClose, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { X, Plus, Minus, Trash2, ChevronDown } from "lucide-react";
+import { X, Plus, Minus, Trash2, ChevronDown, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -223,7 +223,8 @@ const ProductGrid: React.FC<ProductGridProps> = ({ searchTerm, activeFilter, onA
   return (
     <div id="menu" className="container mx-auto px-4 pb-16">
       {filteredProducts.length === 0 ? (
-        <div className="text-center py-16">
+        <div className="text-center py-16 bg-gray-50 rounded-lg shadow-inner">
+          <ShoppingCart size={64} className="mx-auto text-gray-300 mb-4" />
           <h3 className="text-xl font-poppins">
             Nenhum produto encontrado
           </h3>
@@ -243,7 +244,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ searchTerm, activeFilter, onA
                 style={{ transitionDelay: `${index * 100}ms` }}
                 onClick={() => handleProductClick(product)}
               >
-                <div className="bg-white rounded-2xl overflow-hidden shadow-hover card-scale group cursor-pointer">
+                <div className="bg-white rounded-2xl overflow-hidden shadow-hover card-scale group cursor-pointer border-2 border-transparent hover:border-burguer-red">
                   {/* Image container */}
                   <div className="relative h-48 overflow-hidden">
                     <div 
@@ -276,6 +277,13 @@ const ProductGrid: React.FC<ProductGridProps> = ({ searchTerm, activeFilter, onA
                         {product.rating.toFixed(1)}
                       </div>
                     </div>
+
+                    {/* Overlay hint */}
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                      <span className="text-white bg-burguer-red px-3 py-2 rounded-full text-sm font-medium">
+                        Clique para detalhes
+                      </span>
+                    </div>
                   </div>
 
                   {/* Content */}
@@ -287,6 +295,21 @@ const ProductGrid: React.FC<ProductGridProps> = ({ searchTerm, activeFilter, onA
                       <span className="font-poppins font-bold text-xl text-burguer-red">
                         R$ {product.price.toFixed(2)}
                       </span>
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onAddToCart();
+                          toast({
+                            title: "Produto adicionado!",
+                            description: `${product.name} adicionado ao carrinho.`,
+                            variant: "default",
+                            className: "bg-burguer-darkRed text-white"
+                          });
+                        }}
+                        className="flex items-center justify-center w-10 h-10 rounded-full bg-burguer-red text-white hover:bg-burguer-darkRed btn-pulse"
+                      >
+                        <Plus size={20} />
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -298,7 +321,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ searchTerm, activeFilter, onA
             <div className="flex justify-center mt-10">
               <button 
                 onClick={handleShowMore}
-                className="flex items-center gap-2 px-6 py-3 bg-burguer-gold hover:bg-yellow-600 text-white font-semibold rounded-full transition-all duration-300 animate-bounce"
+                className="flex items-center gap-2 px-8 py-4 bg-burguer-gold hover:bg-yellow-600 text-white font-semibold rounded-full transition-all duration-300 shadow-lg hover:shadow-xl"
               >
                 Ver Mais <ChevronDown size={16} />
               </button>
@@ -307,11 +330,11 @@ const ProductGrid: React.FC<ProductGridProps> = ({ searchTerm, activeFilter, onA
         </>
       )}
 
-      {/* Product Detail Dialog */}
+      {/* Product Detail Dialog with improved styling */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <div className="flex justify-between items-start">
-            <DialogTitle className="text-xl font-bold">{selectedProduct?.name}</DialogTitle>
+            <DialogTitle className="text-xl font-bold text-burguer-red">{selectedProduct?.name}</DialogTitle>
             <DialogClose onClick={handleDialogClose}>
               <X className="h-4 w-4" />
               <span className="sr-only">Close</span>
@@ -321,46 +344,49 @@ const ProductGrid: React.FC<ProductGridProps> = ({ searchTerm, activeFilter, onA
 
           {selectedProduct && (
             <div className="mt-4">
-              <div className="w-full h-60 bg-cover bg-center rounded-md mb-4" 
+              <div className="w-full h-60 bg-cover bg-center rounded-md mb-4 border-2 border-burguer-red" 
                    style={{backgroundImage: `url(${selectedProduct.image})`}} />
               
               <p className="text-gray-700 mb-4">{selectedProduct.description}</p>
               
-              <div className="mt-2 mb-4">
-                <span className="font-bold">{selectedProduct.category}</span>
+              <div className="mt-2 mb-4 inline-block bg-gray-100 px-3 py-1 rounded-full">
+                <span className="font-bold text-burguer-red">{selectedProduct.category}</span>
               </div>
 
-              <div className="flex justify-between items-center mb-6">
+              <div className="flex justify-between items-center mb-6 bg-gray-50 p-3 rounded-lg">
                 <div className="font-bold text-xl text-burguer-red">R$ {selectedProduct.price.toFixed(2)}</div>
                 
-                <div className="flex items-center">
+                <div className="flex items-center bg-white rounded-full border border-gray-200 overflow-hidden">
                   <button 
                     onClick={() => handleQuantityChange(-1)}
-                    className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full hover:bg-gray-300 transition-colors">
+                    className="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 transition-colors">
                     <Minus size={16} />
                   </button>
                   <span className="mx-3 font-medium">{quantity}</span>
                   <button 
                     onClick={() => handleQuantityChange(1)}
-                    className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full hover:bg-gray-300 transition-colors">
+                    className="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 transition-colors">
                     <Plus size={16} />
                   </button>
                 </div>
               </div>
 
               <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Alguma observação sobre o pedido?
+                </label>
                 <textarea 
-                  placeholder="Deixe um comentário sobre este produto..." 
+                  placeholder="Ex: Sem cebola, molho à parte..." 
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
-                  className="w-full p-3 border rounded-md"
+                  className="w-full p-3 border rounded-md focus:ring-2 focus:ring-burguer-red focus:border-transparent"
                   rows={3}
                 />
               </div>
 
               <Button 
                 onClick={handleAddToCartFromDialog}
-                className="w-full mt-4 bg-burguer-red hover:bg-burguer-darkRed"
+                className="w-full mt-4 bg-burguer-red hover:bg-burguer-darkRed text-lg py-6 font-medium"
               >
                 Adicionar • R$ {(selectedProduct.price * quantity).toFixed(2)}
               </Button>
