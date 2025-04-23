@@ -9,6 +9,7 @@ import Cardapio from "./pages/Cardapio";
 import Promocoes from "./pages/Promocoes";
 import Sobre from "./pages/Sobre";
 import Contato from "./pages/Contato";
+import MaisVendidos from "./pages/MaisVendidos";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/promocoes" element={<Promocoes />} />
           <Route path="/sobre" element={<Sobre />} />
           <Route path="/contato" element={<Contato />} />
+          <Route path="/mais-vendidos" element={<MaisVendidos />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

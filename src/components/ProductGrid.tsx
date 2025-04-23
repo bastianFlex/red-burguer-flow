@@ -1,11 +1,11 @@
 
 import React, { useState, useEffect } from "react";
-import ProductCard from "./ProductCard";
-import { Dialog, DialogContent, DialogClose, DialogTitle } from "@/components/ui/dialog";
-import { X, Plus, Minus } from "lucide-react";
+import { Dialog, DialogContent, DialogClose, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { X, Plus, Minus, Trash2, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
 
-// Mock data
+// Enhanced mock data with better images
 const mockProducts = [
   {
     id: 1,
@@ -15,7 +15,8 @@ const mockProducts = [
     description: "Seleção de queijos, salames, azeitonas e pães artesanais.",
     rating: 4.5,
     category: "Tradicionais",
-    tags: ["Novo"]
+    tags: ["Novo"],
+    bestSeller: true
   },
   {
     id: 2,
@@ -25,7 +26,8 @@ const mockProducts = [
     description: "Frango grelhado com alface, tomate e molho especial.",
     rating: 4.5,
     category: "Tradicionais",
-    tags: []
+    tags: [],
+    bestSeller: true
   },
   {
     id: 3,
@@ -35,7 +37,8 @@ const mockProducts = [
     description: "Batatas assadas com ervas frescas e molho especial.",
     rating: 4.7,
     category: "Tradicionais",
-    tags: []
+    tags: [],
+    bestSeller: false
   },
   {
     id: 4,
@@ -45,7 +48,8 @@ const mockProducts = [
     description: "Seleção de frutas frescas da estação.",
     rating: 4.6,
     category: "Bebidas",
-    tags: ["Natural"]
+    tags: ["Natural"],
+    bestSeller: false
   },
   {
     id: 5,
@@ -55,7 +59,8 @@ const mockProducts = [
     description: "Coca-Cola, Fanta ou Guaraná 350ml.",
     rating: 4.5,
     category: "Bebidas",
-    tags: []
+    tags: [],
+    bestSeller: false
   },
   {
     id: 6,
@@ -65,7 +70,8 @@ const mockProducts = [
     description: "Água mineral com gás 500ml.",
     rating: 4.8,
     category: "Bebidas",
-    tags: []
+    tags: [],
+    bestSeller: false
   },
   {
     id: 7,
@@ -75,7 +81,8 @@ const mockProducts = [
     description: "Wrap de frango + suco natural.",
     rating: 4.9,
     category: "Combos",
-    tags: ["Combo"]
+    tags: ["Combo"],
+    bestSeller: true
   },
   {
     id: 8,
@@ -85,7 +92,52 @@ const mockProducts = [
     description: "Pães artesanais variados com manteiga.",
     rating: 4.7,
     category: "Tradicionais",
-    tags: []
+    tags: [],
+    bestSeller: false
+  },
+  {
+    id: 9,
+    name: "Burger Clássico",
+    price: 32.90,
+    image: "https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+    description: "Hambúrguer de carne, queijo, alface, tomate e molho especial.",
+    rating: 4.8,
+    category: "Lanches",
+    tags: ["Clássico"],
+    bestSeller: true
+  },
+  {
+    id: 10,
+    name: "Double Cheese",
+    price: 38.90,
+    image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+    description: "Hambúrguer duplo com queijo cheddar derretido.",
+    rating: 4.9,
+    category: "Lanches", 
+    tags: ["Favorito"],
+    bestSeller: true
+  },
+  {
+    id: 11,
+    name: "Limonada Suíça",
+    price: 14.90,
+    image: "https://images.unsplash.com/photo-1621263764776-1c171f8c0b33?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+    description: "Limonada refrescante com leite condensado e hortelã.",
+    rating: 4.7,
+    category: "Bebidas",
+    tags: ["Refrescante"],
+    bestSeller: false
+  },
+  {
+    id: 12,
+    name: "Combo Família",
+    price: 99.90,
+    image: "https://images.unsplash.com/photo-1550547660-d9450f859349?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+    description: "4 hambúrgueres + 2 porções de batatas + 2 refrigerantes.",
+    rating: 4.9,
+    category: "Combos",
+    tags: ["Promoção"],
+    bestSeller: true
   }
 ];
 
@@ -101,6 +153,9 @@ const ProductGrid: React.FC<ProductGridProps> = ({ searchTerm, activeFilter, onA
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const [comment, setComment] = useState("");
+  const [visibleProducts, setVisibleProducts] = useState(6);
+  const { toast } = useToast();
 
   useEffect(() => {
     setAnimateItems(false);
@@ -136,6 +191,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ searchTerm, activeFilter, onA
     setSelectedProduct(product);
     setIsDialogOpen(true);
     setQuantity(1);
+    setComment("");
   };
 
   const handleDialogClose = () => {
@@ -151,7 +207,17 @@ const ProductGrid: React.FC<ProductGridProps> = ({ searchTerm, activeFilter, onA
     for (let i = 0; i < quantity; i++) {
       onAddToCart();
     }
+    toast({
+      title: "Produto adicionado!",
+      description: `${quantity}x ${selectedProduct?.name} adicionado ao carrinho.`,
+      variant: "default",
+      className: "bg-burguer-darkRed text-white"
+    });
     handleDialogClose();
+  };
+
+  const handleShowMore = () => {
+    setVisibleProducts(prev => prev + 6);
   };
 
   return (
@@ -164,50 +230,81 @@ const ProductGrid: React.FC<ProductGridProps> = ({ searchTerm, activeFilter, onA
           <p className="text-gray-500">Tente mudar os filtros ou buscar outro termo.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProducts.map((product, index) => (
-            <div
-              key={product.id}
-              className={`transition-all duration-500 transform ${
-                animateItems
-                  ? "translate-y-0 opacity-100"
-                  : "translate-y-8 opacity-0"
-              }`}
-              style={{ transitionDelay: `${index * 100}ms` }}
-              onClick={() => handleProductClick(product)}
-            >
-              <div className="bg-white rounded-2xl overflow-hidden shadow-hover card-scale group cursor-pointer">
-                {/* Image container */}
-                <div className="relative h-48 overflow-hidden">
-                  <div 
-                    className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
-                    style={{ backgroundImage: `url(${product.image})` }}
-                  />
-                  
-                  {/* Rating */}
-                  <div className="absolute top-3 right-3">
-                    <div className="bg-burguer-gold rounded-full px-2 py-1 flex items-center text-sm font-semibold text-white">
-                      <span className="mr-1">★</span>
-                      {product.rating.toFixed(1)}
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredProducts.slice(0, visibleProducts).map((product, index) => (
+              <div
+                key={product.id}
+                className={`transition-all duration-500 transform ${
+                  animateItems
+                    ? "translate-y-0 opacity-100"
+                    : "translate-y-8 opacity-0"
+                }`}
+                style={{ transitionDelay: `${index * 100}ms` }}
+                onClick={() => handleProductClick(product)}
+              >
+                <div className="bg-white rounded-2xl overflow-hidden shadow-hover card-scale group cursor-pointer">
+                  {/* Image container */}
+                  <div className="relative h-48 overflow-hidden">
+                    <div 
+                      className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                      style={{ backgroundImage: `url(${product.image})` }}
+                    />
+                    
+                    {/* Badges */}
+                    <div className="absolute top-3 left-3 flex flex-wrap gap-2">
+                      {product.bestSeller && (
+                        <span className="bg-burguer-gold text-white px-2 py-1 rounded-full text-xs animate-pulse">
+                          Mais Vendido
+                        </span>
+                      )}
+                      {product.tags.map((tag, idx) => (
+                        <span 
+                          key={idx}
+                          className="bg-black/70 text-white text-xs px-2 py-1 rounded-full animate-fade-in"
+                          style={{ animationDelay: `${idx * 100}ms` }}
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                    
+                    {/* Rating */}
+                    <div className="absolute top-3 right-3">
+                      <div className="bg-burguer-gold rounded-full px-2 py-1 flex items-center text-sm font-semibold text-white">
+                        <span className="mr-1">★</span>
+                        {product.rating.toFixed(1)}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Content */}
+                  <div className="p-4">
+                    <h3 className="font-poppins font-bold text-lg mb-1 text-burguer-dark">{product.name}</h3>
+                    <p className="text-gray-600 text-sm mb-3 line-clamp-2">{product.description}</p>
+                    
+                    <div className="flex justify-between items-center mt-4">
+                      <span className="font-poppins font-bold text-xl text-burguer-red">
+                        R$ {product.price.toFixed(2)}
+                      </span>
                     </div>
                   </div>
                 </div>
-
-                {/* Content */}
-                <div className="p-4">
-                  <h3 className="font-poppins font-bold text-lg mb-1 text-burguer-dark">{product.name}</h3>
-                  <p className="text-gray-600 text-sm mb-3 line-clamp-2">{product.description}</p>
-                  
-                  <div className="flex justify-between items-center mt-4">
-                    <span className="font-poppins font-bold text-xl text-burguer-red">
-                      R$ {product.price.toFixed(2)}
-                    </span>
-                  </div>
-                </div>
               </div>
+            ))}
+          </div>
+          
+          {filteredProducts.length > visibleProducts && (
+            <div className="flex justify-center mt-10">
+              <button 
+                onClick={handleShowMore}
+                className="flex items-center gap-2 px-6 py-3 bg-burguer-gold hover:bg-yellow-600 text-white font-semibold rounded-full transition-all duration-300 animate-bounce"
+              >
+                Ver Mais <ChevronDown size={16} />
+              </button>
             </div>
-          ))}
-        </div>
+          )}
+        </>
       )}
 
       {/* Product Detail Dialog */}
@@ -220,6 +317,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ searchTerm, activeFilter, onA
               <span className="sr-only">Close</span>
             </DialogClose>
           </div>
+          <DialogDescription>Detalhes do produto</DialogDescription>
 
           {selectedProduct && (
             <div className="mt-4">
@@ -229,7 +327,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ searchTerm, activeFilter, onA
               <p className="text-gray-700 mb-4">{selectedProduct.description}</p>
               
               <div className="mt-2 mb-4">
-                <span className="font-bold">Coca-Cola, Fanta ou Guaraná 350ml</span>
+                <span className="font-bold">{selectedProduct.category}</span>
               </div>
 
               <div className="flex justify-between items-center mb-6">
@@ -253,6 +351,8 @@ const ProductGrid: React.FC<ProductGridProps> = ({ searchTerm, activeFilter, onA
               <div className="mt-4">
                 <textarea 
                   placeholder="Deixe um comentário sobre este produto..." 
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
                   className="w-full p-3 border rounded-md"
                   rows={3}
                 />

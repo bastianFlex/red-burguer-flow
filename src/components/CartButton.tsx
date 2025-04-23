@@ -1,8 +1,17 @@
 
 import React, { useState } from "react";
-import { ShoppingCart, X } from "lucide-react";
+import { ShoppingCart, X, Trash2, Plus, Minus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
+
+interface CartItem {
+  id: number;
+  name: string;
+  price: number;
+  quantity: number;
+  image: string;
+}
 
 interface CartButtonProps {
   itemCount: number;
@@ -10,9 +19,50 @@ interface CartButtonProps {
 
 const CartButton: React.FC<CartButtonProps> = ({ itemCount }) => {
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const { toast } = useToast();
+  const [cartItems, setCartItems] = useState<CartItem[]>([
+    {
+      id: 1,
+      name: "Classic Burguer",
+      price: 29.90,
+      quantity: 1,
+      image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=60"
+    }
+  ]);
 
   const toggleCart = () => {
     setIsCartOpen(!isCartOpen);
+  };
+
+  const removeItem = (id: number) => {
+    const itemToRemove = cartItems.find(item => item.id === id);
+    
+    if (itemToRemove) {
+      setCartItems(prevItems => prevItems.filter(item => item.id !== id));
+      
+      toast({
+        title: "Item removido",
+        description: `${itemToRemove.name} foi removido do carrinho.`,
+        variant: "default",
+        className: "bg-red-600 text-white"
+      });
+    }
+  };
+
+  const updateQuantity = (id: number, delta: number) => {
+    setCartItems(prevItems => 
+      prevItems.map(item => {
+        if (item.id === id) {
+          const newQuantity = Math.max(1, item.quantity + delta);
+          return { ...item, quantity: newQuantity };
+        }
+        return item;
+      })
+    );
+  };
+
+  const calculateTotal = () => {
+    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
   return (
@@ -57,21 +107,48 @@ const CartButton: React.FC<CartButtonProps> = ({ itemCount }) => {
 
           {/* Cart Items */}
           <div className="flex-grow overflow-y-auto p-4">
-            {itemCount > 0 ? (
+            {cartItems.length > 0 ? (
               <div className="space-y-4">
-                <div className="flex items-center justify-between border-b pb-4">
-                  <div className="flex items-center">
-                    <div className="w-16 h-16 rounded-lg bg-cover bg-center mr-3" 
-                         style={{backgroundImage: "url('https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=60')"}} />
-                    <div>
-                      <h3 className="font-medium">Classic Burguer</h3>
-                      <p className="text-gray-500 text-sm">1 x R$ 29,90</p>
+                {cartItems.map((item) => (
+                  <div key={item.id} className="flex items-center justify-between border-b pb-4">
+                    <div className="flex items-center">
+                      <div className="w-16 h-16 rounded-lg bg-cover bg-center mr-3" 
+                           style={{backgroundImage: `url(${item.image})`}} />
+                      <div>
+                        <h3 className="font-medium">{item.name}</h3>
+                        <div className="flex items-center mt-1">
+                          <button 
+                            onClick={() => updateQuantity(item.id, -1)}
+                            className="text-gray-500 hover:text-burguer-red p-1"
+                          >
+                            <Minus size={14} />
+                          </button>
+                          <span className="mx-2 text-sm">{item.quantity}</span>
+                          <button 
+                            onClick={() => updateQuantity(item.id, 1)}
+                            className="text-gray-500 hover:text-burguer-red p-1"
+                          >
+                            <Plus size={14} />
+                          </button>
+                          <span className="text-gray-500 text-sm ml-2">
+                            x R$ {item.price.toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-end">
+                      <div className="text-burguer-red font-bold">
+                        R$ {(item.price * item.quantity).toFixed(2)}
+                      </div>
+                      <button 
+                        onClick={() => removeItem(item.id)}
+                        className="mt-2 flex items-center text-xs text-red-500 hover:text-red-700"
+                      >
+                        <Trash2 size={14} className="mr-1" /> Remover
+                      </button>
                     </div>
                   </div>
-                  <div className="text-burguer-red font-bold">R$ 29,90</div>
-                </div>
-                
-                {/* You can add more items here or map through actual cart items */}
+                ))}
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center h-full">
@@ -86,14 +163,14 @@ const CartButton: React.FC<CartButtonProps> = ({ itemCount }) => {
             <div className="flex justify-between mb-4">
               <span className="font-medium">Subtotal:</span>
               <span className="font-bold">
-                {itemCount > 0 ? "R$ 29,90" : "R$ 0,00"}
+                {cartItems.length > 0 ? `R$ ${calculateTotal().toFixed(2)}` : "R$ 0,00"}
               </span>
             </div>
             <Button 
-              disabled={itemCount === 0}
+              disabled={cartItems.length === 0}
               className={cn(
                 "w-full font-poppins font-semibold", 
-                itemCount > 0 ? "bg-green-600 hover:bg-green-700 animate-pulse" : "bg-gray-300"
+                cartItems.length > 0 ? "bg-green-600 hover:bg-green-700 animate-pulse" : "bg-gray-300"
               )}
             >
               Finalizar Pedido

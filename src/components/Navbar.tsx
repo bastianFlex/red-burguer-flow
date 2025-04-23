@@ -2,12 +2,16 @@
 import React, { useState, useEffect } from "react";
 import { Menu, X, ShoppingCart, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { useToast } from "@/components/ui/use-toast";
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [cartItemCount, setCartItemCount] = useState(0);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const { toast } = useToast();
+  const location = useLocation();
 
   // Animation demo for cart
   const addToCart = () => {
@@ -19,6 +23,13 @@ const Navbar: React.FC = () => {
         cartIcon.classList.remove("animate-shake");
       }, 500);
     }
+    
+    toast({
+      title: "Item adicionado ao carrinho",
+      description: "Produto adicionado com sucesso!",
+      variant: "default",
+      className: "bg-burguer-darkRed text-white"
+    });
   };
 
   useEffect(() => {
@@ -34,6 +45,10 @@ const Navbar: React.FC = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const toggleMobileMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
   return (
     <nav
       className={cn(
@@ -46,7 +61,7 @@ const Navbar: React.FC = () => {
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center">
           <button 
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            onClick={toggleMobileMenu}
             className="mr-4 p-2 rounded-full hover:bg-burguer-light transition-colors duration-300 md:hidden ripple-effect"
           >
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -61,11 +76,12 @@ const Navbar: React.FC = () => {
 
         {/* Desktop Menu */}
         <div className="hidden md:flex space-x-8">
-          <NavLink href="/" active>Início</NavLink>
-          <NavLink href="/cardapio">Cardápio</NavLink>
-          <NavLink href="/promocoes">Promoções</NavLink>
-          <NavLink href="/sobre">Sobre Nós</NavLink>
-          <NavLink href="/contato">Contato</NavLink>
+          <NavLink href="/" active={location.pathname === "/"}>Início</NavLink>
+          <NavLink href="/cardapio" active={location.pathname === "/cardapio"}>Cardápio</NavLink>
+          <NavLink href="/promocoes" active={location.pathname === "/promocoes"}>Promoções</NavLink>
+          <NavLink href="/sobre" active={location.pathname === "/sobre"}>Sobre Nós</NavLink>
+          <NavLink href="/contato" active={location.pathname === "/contato"}>Contato</NavLink>
+          <NavLink href="/mais-vendidos" active={location.pathname === "/mais-vendidos"}>Mais Vendidos</NavLink>
         </div>
 
         {/* Mobile Menu */}
@@ -74,11 +90,12 @@ const Navbar: React.FC = () => {
           isMenuOpen ? "translate-x-0" : "-translate-x-full"
         )}>
           <div className="flex flex-col p-4 space-y-4">
-            <NavLink href="/" active>Início</NavLink>
-            <NavLink href="/cardapio">Cardápio</NavLink>
-            <NavLink href="/promocoes">Promoções</NavLink>
-            <NavLink href="/sobre">Sobre Nós</NavLink>
-            <NavLink href="/contato">Contato</NavLink>
+            <NavLink href="/" active={location.pathname === "/"}>Início</NavLink>
+            <NavLink href="/cardapio" active={location.pathname === "/cardapio"}>Cardápio</NavLink>
+            <NavLink href="/promocoes" active={location.pathname === "/promocoes"}>Promoções</NavLink>
+            <NavLink href="/sobre" active={location.pathname === "/sobre"}>Sobre Nós</NavLink>
+            <NavLink href="/contato" active={location.pathname === "/contato"}>Contato</NavLink>
+            <NavLink href="/mais-vendidos" active={location.pathname === "/mais-vendidos"}>Mais Vendidos</NavLink>
           </div>
         </div>
 
@@ -86,7 +103,7 @@ const Navbar: React.FC = () => {
           <div className="relative">
             <button 
               className="p-2 rounded-full hover:bg-burguer-light transition-colors duration-300 ripple-effect"
-              onClick={() => {}}
+              onClick={() => window.location.href = "/cardapio"}
             >
               <Search size={22} />
             </button>

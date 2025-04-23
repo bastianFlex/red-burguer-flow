@@ -15,6 +15,7 @@ const FilterSection: React.FC<FilterProps> = ({ onSearch, onFilterChange }) => {
 
   const filters = [
     "Todos",
+    "Tradicionais",
     "Lanches",
     "Bebidas",
     "Combos",
@@ -31,6 +32,11 @@ const FilterSection: React.FC<FilterProps> = ({ onSearch, onFilterChange }) => {
     onSearch(value);
   };
 
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSearch(searchTerm);
+  };
+
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="flex flex-col md:flex-row justify-between items-center mb-8">
@@ -40,26 +46,31 @@ const FilterSection: React.FC<FilterProps> = ({ onSearch, onFilterChange }) => {
 
         {/* Search input */}
         <div className="relative w-full md:w-64">
-          <div className={cn(
-            "flex items-center bg-white rounded-full border border-gray-200 overflow-hidden transition-all duration-300",
-            isSearchFocused ? "shadow-md" : ""
-          )}>
+          <form onSubmit={handleSearchSubmit} className="w-full">
             <div className={cn(
-              "pl-4 transition-all duration-300",
-              isSearchFocused ? "transform -translate-x-1" : ""
+              "flex items-center bg-white rounded-full border border-gray-200 overflow-hidden transition-all duration-300",
+              isSearchFocused ? "shadow-md" : ""
             )}>
-              <Search size={18} className="text-gray-400" />
+              <button 
+                type="submit" 
+                className={cn(
+                  "pl-4 transition-all duration-300",
+                  isSearchFocused ? "transform -translate-x-1" : ""
+                )}
+              >
+                <Search size={18} className="text-gray-400" />
+              </button>
+              <input
+                type="text"
+                placeholder="Pesquisar..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+                onFocus={() => setIsSearchFocused(true)}
+                onBlur={() => setIsSearchFocused(false)}
+                className="w-full py-2 px-3 outline-none"
+              />
             </div>
-            <input
-              type="text"
-              placeholder="Pesquisar..."
-              value={searchTerm}
-              onChange={handleSearchChange}
-              onFocus={() => setIsSearchFocused(true)}
-              onBlur={() => setIsSearchFocused(false)}
-              className="w-full py-2 px-3 outline-none"
-            />
-          </div>
+          </form>
         </div>
       </div>
 
