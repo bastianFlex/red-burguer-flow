@@ -3,13 +3,13 @@ import React, { useState } from "react";
 import Navbar from "../components/Navbar";
 import FilterSection from "../components/FilterSection";
 import ProductGrid from "../components/ProductGrid";
-import CartButton from "../components/CartButton";
+import CartButton, { CartItem } from "../components/CartButton";
 import Footer from "../components/Footer";
 
 const Cardapio = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("Todos");
-  const [cartItems, setCartItems] = useState(0);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
@@ -19,8 +19,23 @@ const Cardapio = () => {
     setActiveFilter(filter);
   };
 
-  const handleAddToCart = () => {
-    setCartItems(prev => prev + 1);
+  const handleAddToCart = (product: CartItem) => {
+    setCartItems(prev => {
+      // Check if product already exists in cart
+      const existingItem = prev.find(item => item.id === product.id);
+      
+      if (existingItem) {
+        // Update quantity if product already exists
+        return prev.map(item => 
+          item.id === product.id 
+            ? { ...item, quantity: item.quantity + product.quantity } 
+            : item
+        );
+      } else {
+        // Add new product to cart
+        return [...prev, product];
+      }
+    });
   };
 
   return (
@@ -40,7 +55,11 @@ const Cardapio = () => {
         />
       </main>
       
-      <CartButton itemCount={cartItems} />
+      <CartButton 
+        itemCount={cartItems.reduce((total, item) => total + item.quantity, 0)} 
+        cartItems={cartItems}
+        setCartItems={setCartItems}
+      />
       <Footer />
     </div>
   );

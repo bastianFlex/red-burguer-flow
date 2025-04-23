@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogClose, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { X, Plus, Minus, Trash2, ChevronDown, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 // Enhanced mock data with better images
 const mockProducts = [
@@ -144,7 +144,7 @@ const mockProducts = [
 interface ProductGridProps {
   searchTerm: string;
   activeFilter: string;
-  onAddToCart: () => void;
+  onAddToCart: (product: any) => void;
 }
 
 const ProductGrid: React.FC<ProductGridProps> = ({ searchTerm, activeFilter, onAddToCart }) => {
@@ -204,16 +204,45 @@ const ProductGrid: React.FC<ProductGridProps> = ({ searchTerm, activeFilter, onA
   };
 
   const handleAddToCartFromDialog = () => {
-    for (let i = 0; i < quantity; i++) {
-      onAddToCart();
+    if (selectedProduct) {
+      const productToAdd = {
+        id: selectedProduct.id,
+        name: selectedProduct.name,
+        price: selectedProduct.price,
+        quantity: quantity,
+        image: selectedProduct.image,
+        comment: comment
+      };
+      onAddToCart(productToAdd);
+      
+      toast({
+        title: "Produto adicionado!",
+        description: `${quantity}x ${selectedProduct?.name} adicionado ao carrinho.`,
+        variant: "default",
+        className: "bg-burguer-darkRed text-white"
+      });
+      
+      handleDialogClose();
     }
+  };
+
+  const handleAddToCartFromGrid = (e: React.MouseEvent, product: any) => {
+    e.stopPropagation();
+    const productToAdd = {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      quantity: 1,
+      image: product.image
+    };
+    onAddToCart(productToAdd);
+    
     toast({
       title: "Produto adicionado!",
-      description: `${quantity}x ${selectedProduct?.name} adicionado ao carrinho.`,
+      description: `${product.name} adicionado ao carrinho.`,
       variant: "default",
       className: "bg-burguer-darkRed text-white"
     });
-    handleDialogClose();
   };
 
   const handleShowMore = () => {
@@ -296,16 +325,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ searchTerm, activeFilter, onA
                         R$ {product.price.toFixed(2)}
                       </span>
                       <button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onAddToCart();
-                          toast({
-                            title: "Produto adicionado!",
-                            description: `${product.name} adicionado ao carrinho.`,
-                            variant: "default",
-                            className: "bg-burguer-darkRed text-white"
-                          });
-                        }}
+                        onClick={(e) => handleAddToCartFromGrid(e, product)}
                         className="flex items-center justify-center w-10 h-10 rounded-full bg-burguer-red text-white hover:bg-burguer-darkRed btn-pulse"
                       >
                         <Plus size={20} />

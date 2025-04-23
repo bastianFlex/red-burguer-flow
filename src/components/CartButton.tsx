@@ -3,9 +3,9 @@ import React, { useState } from "react";
 import { ShoppingCart, X, Trash2, Plus, Minus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
-interface CartItem {
+export interface CartItem {
   id: number;
   name: string;
   price: number;
@@ -15,20 +15,13 @@ interface CartItem {
 
 interface CartButtonProps {
   itemCount: number;
+  cartItems: CartItem[];
+  setCartItems: React.Dispatch<React.SetStateAction<CartItem[]>>;
 }
 
-const CartButton: React.FC<CartButtonProps> = ({ itemCount }) => {
+const CartButton: React.FC<CartButtonProps> = ({ itemCount, cartItems, setCartItems }) => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const { toast } = useToast();
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: 1,
-      name: "Classic Burguer",
-      price: 29.90,
-      quantity: 1,
-      image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=60"
-    }
-  ]);
 
   const toggleCart = () => {
     setIsCartOpen(!isCartOpen);
