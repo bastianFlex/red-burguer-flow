@@ -15,11 +15,9 @@ const FilterSection: React.FC<FilterProps> = ({ onSearch, onFilterChange }) => {
 
   const filters = [
     "Todos",
-    "Tradicionais",
-    "Gourmet",
-    "Vegetarianos",
-    "Combos",
+    "Lanches",
     "Bebidas",
+    "Combos",
   ];
 
   const handleFilterClick = (filter: string) => {
@@ -54,7 +52,7 @@ const FilterSection: React.FC<FilterProps> = ({ onSearch, onFilterChange }) => {
             </div>
             <input
               type="text"
-              placeholder="Buscar produto..."
+              placeholder="Pesquisar..."
               value={searchTerm}
               onChange={handleSearchChange}
               onFocus={() => setIsSearchFocused(true)}
@@ -72,10 +70,10 @@ const FilterSection: React.FC<FilterProps> = ({ onSearch, onFilterChange }) => {
             key={filter}
             onClick={() => handleFilterClick(filter)}
             className={cn(
-              "px-4 py-2 rounded-full transition-all duration-300 text-sm md:text-base ripple-effect",
+              "px-6 py-2 rounded-full transition-all duration-300 text-sm md:text-base ripple-effect",
               activeFilter === filter
                 ? "bg-burguer-red text-white shadow-md"
-                : "bg-white text-gray-600 hover:bg-gray-100"
+                : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-100"
             )}
           >
             {filter}

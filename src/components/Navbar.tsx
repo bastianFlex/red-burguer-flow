@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Menu, X, ShoppingCart, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Link } from "react-router-dom";
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -52,19 +53,19 @@ const Navbar: React.FC = () => {
           </button>
           
           <div className="flex items-center">
-            <span className="font-poppins font-bold text-2xl text-burguer-red">
+            <Link to="/" className="font-poppins font-bold text-2xl text-burguer-red">
               Red<span className="text-burguer-gold">Burguer</span>
-            </span>
+            </Link>
           </div>
         </div>
 
         {/* Desktop Menu */}
         <div className="hidden md:flex space-x-8">
-          <NavLink href="#" active>Início</NavLink>
-          <NavLink href="#">Cardápio</NavLink>
-          <NavLink href="#">Promoções</NavLink>
-          <NavLink href="#">Sobre Nós</NavLink>
-          <NavLink href="#">Contato</NavLink>
+          <NavLink href="/" active>Início</NavLink>
+          <NavLink href="/cardapio">Cardápio</NavLink>
+          <NavLink href="/promocoes">Promoções</NavLink>
+          <NavLink href="/sobre">Sobre Nós</NavLink>
+          <NavLink href="/contato">Contato</NavLink>
         </div>
 
         {/* Mobile Menu */}
@@ -73,11 +74,11 @@ const Navbar: React.FC = () => {
           isMenuOpen ? "translate-x-0" : "-translate-x-full"
         )}>
           <div className="flex flex-col p-4 space-y-4">
-            <NavLink href="#" active>Início</NavLink>
-            <NavLink href="#">Cardápio</NavLink>
-            <NavLink href="#">Promoções</NavLink>
-            <NavLink href="#">Sobre Nós</NavLink>
-            <NavLink href="#">Contato</NavLink>
+            <NavLink href="/" active>Início</NavLink>
+            <NavLink href="/cardapio">Cardápio</NavLink>
+            <NavLink href="/promocoes">Promoções</NavLink>
+            <NavLink href="/sobre">Sobre Nós</NavLink>
+            <NavLink href="/contato">Contato</NavLink>
           </div>
         </div>
 
@@ -117,8 +118,8 @@ interface NavLinkProps {
 
 const NavLink: React.FC<NavLinkProps> = ({ href, active, children }) => {
   return (
-    <a 
-      href={href}
+    <Link 
+      to={href}
       className={cn(
         "relative font-medium hover:text-burguer-red transition-colors duration-300",
         "after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:-bottom-1 after:left-0",
@@ -128,7 +129,7 @@ const NavLink: React.FC<NavLinkProps> = ({ href, active, children }) => {
       )}
     >
       {children}
-    </a>
+    </Link>
   );
 };
 
