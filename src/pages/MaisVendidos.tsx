@@ -2,10 +2,10 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import CartButton from "../components/CartButton";
+import CartButton, { CartItem } from "../components/CartButton";
 import { Star, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 
 // Mock best sellers data
@@ -89,7 +89,7 @@ const itemVariants = {
 };
 
 const MaisVendidos = () => {
-  const [cartItems, setCartItems] = useState(0);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const { toast } = useToast();
   const [animateItems, setAnimateItems] = useState(false);
 
@@ -98,7 +98,27 @@ const MaisVendidos = () => {
   }, []);
 
   const handleAddToCart = (product: any) => {
-    setCartItems(prev => prev + 1);
+    const newItem: CartItem = {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      quantity: 1,
+      image: product.image
+    };
+    
+    setCartItems(prev => {
+      const existingItem = prev.find(item => item.id === product.id);
+      
+      if (existingItem) {
+        return prev.map(item => 
+          item.id === product.id 
+            ? { ...item, quantity: item.quantity + 1 } 
+            : item
+        );
+      } else {
+        return [...prev, newItem];
+      }
+    });
     
     toast({
       title: "Item adicionado!",
@@ -194,7 +214,11 @@ const MaisVendidos = () => {
         </div>
       </main>
       
-      <CartButton itemCount={cartItems} />
+      <CartButton 
+        itemCount={cartItems.reduce((total, item) => total + item.quantity, 0)} 
+        cartItems={cartItems}
+        setCartItems={setCartItems}
+      />
       <Footer />
     </div>
   );

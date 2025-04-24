@@ -2,12 +2,12 @@
 import React, { useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import CartButton from "../components/CartButton";
+import CartButton, { CartItem } from "../components/CartButton";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 
 const Sobre = () => {
-  const [cartItems, setCartItems] = useState(0);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -102,7 +102,11 @@ const Sobre = () => {
         </div>
       </main>
       
-      <CartButton itemCount={cartItems} />
+      <CartButton 
+        itemCount={cartItems.reduce((total, item) => total + item.quantity, 0)} 
+        cartItems={cartItems}
+        setCartItems={setCartItems}
+      />
       <Footer />
     </div>
   );

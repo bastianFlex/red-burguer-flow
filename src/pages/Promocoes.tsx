@@ -1,7 +1,8 @@
+
 import React, { useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import CartButton from "../components/CartButton";
+import CartButton, { CartItem } from "../components/CartButton";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { ShoppingCart, Star, ArrowRight } from "lucide-react";
@@ -49,11 +50,31 @@ const promotions = [
 ];
 
 const Promocoes = () => {
-  const [cartItems, setCartItems] = useState(0);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const { toast } = useToast();
 
   const handleOrderNow = (promotion: any) => {
-    setCartItems(prev => prev + 1);
+    const newItem: CartItem = {
+      id: promotion.id,
+      name: promotion.name,
+      price: promotion.discountedPrice,
+      quantity: 1,
+      image: promotion.image
+    };
+    
+    setCartItems(prev => {
+      const existingItem = prev.find(item => item.id === promotion.id);
+      
+      if (existingItem) {
+        return prev.map(item => 
+          item.id === promotion.id 
+            ? { ...item, quantity: item.quantity + 1 } 
+            : item
+        );
+      } else {
+        return [...prev, newItem];
+      }
+    });
     
     toast({
       title: "Promoção adicionada!",
@@ -149,7 +170,11 @@ const Promocoes = () => {
         </div>
       </main>
       
-      <CartButton itemCount={cartItems} />
+      <CartButton 
+        itemCount={cartItems.reduce((total, item) => total + item.quantity, 0)} 
+        cartItems={cartItems}
+        setCartItems={setCartItems}
+      />
       <Footer />
     </div>
   );

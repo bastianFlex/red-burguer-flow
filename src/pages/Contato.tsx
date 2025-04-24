@@ -2,12 +2,12 @@
 import React, { useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import CartButton from "../components/CartButton";
+import CartButton, { CartItem } from "../components/CartButton";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 
 const Contato = () => {
-  const [cartItems, setCartItems] = useState(0);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [formData, setFormData] = useState({
     nome: "",
     email: "",
@@ -145,7 +145,11 @@ const Contato = () => {
         </div>
       </main>
       
-      <CartButton itemCount={cartItems} />
+      <CartButton 
+        itemCount={cartItems.reduce((total, item) => total + item.quantity, 0)} 
+        cartItems={cartItems}
+        setCartItems={setCartItems}
+      />
       <Footer />
     </div>
   );

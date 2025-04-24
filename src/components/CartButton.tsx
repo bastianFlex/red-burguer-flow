@@ -19,16 +19,19 @@ interface CartButtonProps {
   setCartItems: React.Dispatch<React.SetStateAction<CartItem[]>>;
 }
 
-const CartButton: React.FC<CartButtonProps> = ({ itemCount, cartItems, setCartItems }) => {
+const CartButton: React.FC<CartButtonProps> = ({ itemCount, cartItems = [], setCartItems }) => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const { toast } = useToast();
+  
+  // Ensure cartItems is always an array to prevent "Cannot read properties of undefined (reading 'length')" error
+  const safeCartItems = Array.isArray(cartItems) ? cartItems : [];
 
   const toggleCart = () => {
     setIsCartOpen(!isCartOpen);
   };
 
   const removeItem = (id: number) => {
-    const itemToRemove = cartItems.find(item => item.id === id);
+    const itemToRemove = safeCartItems.find(item => item.id === id);
     
     if (itemToRemove) {
       setCartItems(prevItems => prevItems.filter(item => item.id !== id));
@@ -55,7 +58,7 @@ const CartButton: React.FC<CartButtonProps> = ({ itemCount, cartItems, setCartIt
   };
 
   const calculateTotal = () => {
-    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+    return safeCartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
   return (
@@ -105,9 +108,9 @@ const CartButton: React.FC<CartButtonProps> = ({ itemCount, cartItems, setCartIt
 
           {/* Cart Items */}
           <div className="flex-grow overflow-y-auto p-4">
-            {cartItems.length > 0 ? (
+            {safeCartItems.length > 0 ? (
               <div className="space-y-4">
-                {cartItems.map((item) => (
+                {safeCartItems.map((item) => (
                   <div key={item.id} className="flex items-center justify-between border-b pb-4">
                     <div className="flex items-center">
                       <div className="w-16 h-16 rounded-lg bg-cover bg-center mr-3" 
@@ -165,14 +168,14 @@ const CartButton: React.FC<CartButtonProps> = ({ itemCount, cartItems, setCartIt
             <div className="flex justify-between mb-4">
               <span className="font-medium">Subtotal:</span>
               <span className="font-bold text-lg">
-                {cartItems.length > 0 ? `R$ ${calculateTotal().toFixed(2)}` : "R$ 0,00"}
+                {safeCartItems.length > 0 ? `R$ ${calculateTotal().toFixed(2)}` : "R$ 0,00"}
               </span>
             </div>
             <Button 
-              disabled={cartItems.length === 0}
+              disabled={safeCartItems.length === 0}
               className={cn(
                 "w-full font-poppins font-semibold py-6", 
-                cartItems.length > 0 ? "bg-green-600 hover:bg-green-700 animate-pulse" : "bg-gray-300"
+                safeCartItems.length > 0 ? "bg-green-600 hover:bg-green-700 animate-pulse" : "bg-gray-300"
               )}
             >
               Finalizar Pedido
